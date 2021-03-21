@@ -1,0 +1,2 @@
+bitstring==3.1.7
+numpy==1.20.1

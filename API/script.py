@@ -1,4 +1,4 @@
-from ..genetic.population import Population
+from ..genetic.population_v1 import Population
 
 range = input("Insert range (e.g. (a,b)): ")
 range_start = int(range[1])

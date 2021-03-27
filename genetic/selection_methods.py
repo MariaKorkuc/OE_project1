@@ -1,4 +1,4 @@
-from OE_project1.genetic.population import Population
+from OE_project1.genetic.population_v1 import Population
 import numpy as np
 
 def selection_of_best(population, proc_of_chosen):

@@ -1,92 +1,68 @@
 import numpy as np
 import random
-import struct
-import bitstring
+
 
 class Chromosome:
-    def __init__(self, value, range, number_of_bits):
-        self.dec_value = value
-        self.range = range
+    def __init__(self, number_of_bits, value_range):
+        self.binary = [random.randint(0,1) for _ in range(number_of_bits)]
+        self.binary_string = ''.join(str(b) for b in self.binary)
         self.number_of_bits = number_of_bits
-        self.bin_value = self.get_bin_value()
+        self.start = value_range[0]
+        self.stop = value_range[1]
+        self.step = self.count_step()
 
-    def get_dec_value(self):
-        return self.dec_value
+    def get_binary(self):
+        return self.binary
 
-    def get_bin_value(self):
-        # packed = struct.pack('!f', self.dec_value)
-        # binaries = [bin(i) for i in packed]
-        # stripped_binaries = [s.replace('0b', '') for s in binaries]
-        # padded = [s.rjust(self.number_of_bits, '0') for s in stripped_binaries]
-        # return ''.join(padded)
-        f1 = bitstring.BitArray(float=self.dec_value, length=32)
-        return f1.bin
+    def get_decimal(self):
+        return self.start + int(self.binary_string, 2)*self.step
+
+    def count_step(self):
+        range_size = self.stop - self.start
+        possible_combinations = np.power(2, self.number_of_bits)
+        return range_size/(possible_combinations - 1)
 
     def __str__(self):
-        return str(f'{self.dec_value} ({self.bin_value})')
+        return self.binary_string + ' (' + str(self.get_decimal()) + ')'
 
 
+class Individual:
+    def __init__(self, value_range, number_of_bits, number_of_chromosomes):
+        self.chromosomes = [Chromosome(number_of_bits, value_range) for _ in range(number_of_chromosomes)]
+
+    def get_chromosomes(self):
+        return self.chromosomes
+
+    def __getitem__(self, key):
+        return self.chromosomes[key]
+
+    def __setitem__(self, key, value):
+        self.chromosomes[key] = value
+
+    def __str__(self):
+        return ' | '.join(str(ch) for ch in self.chromosomes)
 
 
 class Population:
-    def __init__(self, number_of_chromosomes, range_start, range_end, number_of_bits, unique=False, seed=None):
-        self.chromosomes = []
-        self.range = (range_start, range_end)
-        self.n = number_of_chromosomes
+    def __init__(self, size, range_start, range_stop, number_of_bits, chromosomes_per_individual=2):
+        self.range = (range_start, range_stop)
+        self.size = size
+        self.chromosomes_per_indiv = chromosomes_per_individual
         self.number_of_bits = number_of_bits
-        self.unique = unique
-        # if unique:
-        #     try:
-        #         self.possible_number()
-        #     except Exception as e:
-        #         print(e)
-        #         exit(-1)
-        self.prepare_random_population_dec(seed)
+        self.individuals = self.get_individuals()
 
-    def prepare_random_population_dec(self, seed=None):
-        if seed:
-            random.seed(seed)
-        for i in range(self.n):
-            val = random.uniform(self.range[0], self.range[1])
-            # self.chromosomes[0][i] = Chromosome(val, self.range, self.accuracy)
-            self.chromosomes.append(Chromosome(val, self.range, self.number_of_bits))
+    def get_individuals(self):
+        return [Individual(self.range, self.number_of_bits, self.chromosomes_per_indiv) for _ in range(self.size)]
 
-    # def prepare_random_population(self, seed=None):
-    #     if seed:
-    #         random.seed(seed)
-    #     for i in range(self.n):
-    #         self.chromosomes_binary.append(self.random_chromosome())
-
-    # def random_chromosome(self):
-    #     chrom = ''
-    #     if self.unique:
-    #         while not chrom or chrom in self.chromosomes_binary:
-    #             chr_l = [random.choice(('0', '1')) for _ in range(self.chromosome_size)]
-    #             chrom = ''
-    #             chrom = chrom.join(chr_l)
-    #     else:
-    #         chr_l = [random.choice(('0', '1')) for _ in range(self.chromosome_size)]
-    #         chrom = chrom.join(chr_l)
-    #     return chrom
-
-    def get_population(self):
-        return self.chromosomes
+    def __len__(self):
+        return self.size
 
     def __str__(self):
-        s = ''
-        for c in self.chromosomes:
-            s += str(c) + '\n'
-        return s
+        return '\n'.join([str(ind) for ind in self.individuals])
 
-    # TODO
-    # def possible_number(self):
-    # #     possible = 2**self.chromosome_size
-    # #     if self.n > possible:
-    # #         raise Exception('Size of population is too big for the possible chromosome combinations')
-    # maxim = sum([])
+    def __getitem__(self, key):
+        return self.individuals[key]
 
-
-if __name__ == '__main__':
-    pop = Population(5, 1, 6, 4)
-    print(pop.get_population())
+    def __setitem__(self, key, value):
+        self.individuals[key] = value
 

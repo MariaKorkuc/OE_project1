@@ -1,4 +1,5 @@
 import numpy as np
+import OE_project1.genetic.Geneticutils as gen
 import random
 
 
@@ -29,6 +30,7 @@ class Chromosome:
 class Individual:
     def __init__(self, value_range, number_of_bits, number_of_chromosomes):
         self.chromosomes = [Chromosome(number_of_bits, value_range) for _ in range(number_of_chromosomes)]
+        self.func_value = gen.chosen_func(self.get_dec_value())
 
     def get_chromosomes(self):
         return self.chromosomes
@@ -42,9 +44,16 @@ class Individual:
     def __str__(self):
         return ' | '.join(str(ch) for ch in self.chromosomes)
 
+    def get_dec_value(self):
+        return [ch.get_decimal() for ch in self.chromosomes]
+
+    def get_func_value(self):
+        return self.func_value
 
 class Population:
-    def __init__(self, size, range_start, range_stop, number_of_bits, chromosomes_per_individual=2):
+    def __init__(self, size, range_start, range_stop, number_of_bits, chromosomes_per_individual=2, seed = None):
+        if seed:
+            random.seed(seed)
         self.range = (range_start, range_stop)
         self.size = size
         self.chromosomes_per_indiv = chromosomes_per_individual

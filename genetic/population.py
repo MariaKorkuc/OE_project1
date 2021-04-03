@@ -20,6 +20,7 @@ class Chromosome:
 
     def set_binary(self, chromosome):
         self.binary = chromosome
+        self.binary_string = ''.join(str(b) for b in self.binary)
 
     def count_step(self):
         range_size = self.stop - self.start

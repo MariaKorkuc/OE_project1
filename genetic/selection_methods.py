@@ -1,5 +1,5 @@
-from OE_project1.genetic.population import Population
-from OE_project1.genetic.Geneticutils import chosen_func, get_best
+from genetic.population import Population
+from genetic.Geneticutils import chosen_func, get_best
 import numpy as np
 
 # TODO: czy nie dorzucić gdzies listy z wartosciami dla kazdego osobnika?

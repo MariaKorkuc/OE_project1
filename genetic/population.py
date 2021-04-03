@@ -1,11 +1,11 @@
 import numpy as np
-import OE_project1.genetic.Geneticutils as gen
+import genetic.Geneticutils as gen
 import random
 
 
 class Chromosome:
     def __init__(self, number_of_bits, value_range):
-        self.binary = [random.randint(0,1) for _ in range(number_of_bits)]
+        self.binary = [random.randint(0, 1) for _ in range(number_of_bits)]
         self.binary_string = ''.join(str(b) for b in self.binary)
         self.number_of_bits = number_of_bits
         self.start = value_range[0]
@@ -16,12 +16,15 @@ class Chromosome:
         return self.binary
 
     def get_decimal(self):
-        return self.start + int(self.binary_string, 2)*self.step
+        return self.start + int(self.binary_string, 2) * self.step
+
+    def set_binary(self, chromosome):
+        self.binary = chromosome
 
     def count_step(self):
         range_size = self.stop - self.start
         possible_combinations = np.power(2, self.number_of_bits)
-        return range_size/(possible_combinations - 1)
+        return range_size / (possible_combinations - 1)
 
     def __str__(self):
         return self.binary_string + ' (' + str(self.get_decimal()) + ')'
@@ -50,8 +53,9 @@ class Individual:
     def get_func_value(self):
         return self.func_value
 
+
 class Population:
-    def __init__(self, size, range_start, range_stop, number_of_bits, chromosomes_per_individual=2, seed = None):
+    def __init__(self, size, range_start, range_stop, number_of_bits, chromosomes_per_individual=2, seed=None):
         if seed:
             random.seed(seed)
         self.range = (range_start, range_stop)
@@ -74,4 +78,3 @@ class Population:
 
     def __setitem__(self, key, value):
         self.individuals[key] = value
-

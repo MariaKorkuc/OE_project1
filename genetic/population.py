@@ -4,8 +4,8 @@ import random
 
 
 class Chromosome:
-    def __init__(self, number_of_bits, value_range):
-        self.binary = [random.randint(0, 1) for _ in range(number_of_bits)]
+    def __init__(self, number_of_bits, value_range, binary=None):
+        self.binary = [random.randint(0,1) for _ in range(number_of_bits)] if not binary else binary
         self.binary_string = ''.join(str(b) for b in self.binary)
         self.number_of_bits = number_of_bits
         self.start = value_range[0]
@@ -31,12 +31,17 @@ class Chromosome:
 
 
 class Individual:
-    def __init__(self, value_range, number_of_bits, number_of_chromosomes):
-        self.chromosomes = [Chromosome(number_of_bits, value_range) for _ in range(number_of_chromosomes)]
+    def __init__(self, value_range, number_of_bits, number_of_chromosomes, chromosomes=None):
+        self.chromosomes = [Chromosome(number_of_bits, value_range) for _ in range(number_of_chromosomes)] \
+            if not chromosomes else chromosomes
         self.func_value = gen.chosen_func(self.get_dec_value())
+        self.value_range = value_range
 
     def get_chromosomes(self):
         return self.chromosomes
+
+    def __len__(self):
+        return len(self.chromosomes)
 
     def __getitem__(self, key):
         return self.chromosomes[key]
@@ -45,7 +50,7 @@ class Individual:
         self.chromosomes[key] = value
 
     def __str__(self):
-        return ' | '.join(str(ch) for ch in self.chromosomes)
+        return ' | '.join(str(ch) for ch in self.chromosomes) + f' -- val: {self.get_func_value()}'
 
     def get_dec_value(self):
         return [ch.get_decimal() for ch in self.chromosomes]
@@ -53,18 +58,21 @@ class Individual:
     def get_func_value(self):
         return self.func_value
 
+    def get_value_range(self):
+        return self.value_range
+
 
 class Population:
-    def __init__(self, size, range_start, range_stop, number_of_bits, chromosomes_per_individual=2, seed=None):
+    def __init__(self, size, range_start, range_stop, number_of_bits, chromosomes_per_individual=2, individuals=None, seed=None):
         if seed:
             random.seed(seed)
         self.range = (range_start, range_stop)
         self.size = size
         self.chromosomes_per_indiv = chromosomes_per_individual
         self.number_of_bits = number_of_bits
-        self.individuals = self.get_individuals()
+        self.individuals = self.set_individuals() if not individuals else individuals
 
-    def get_individuals(self):
+    def set_individuals(self):
         return [Individual(self.range, self.number_of_bits, self.chromosomes_per_indiv) for _ in range(self.size)]
 
     def __len__(self):
@@ -78,3 +86,16 @@ class Population:
 
     def __setitem__(self, key, value):
         self.individuals[key] = value
+
+    def get_sorted(self, reverse=False):
+        srt = sorted(self.individuals, key=lambda x: x.get_func_value(), reverse=reverse)
+        return '\n'.join([str(ind) for ind in srt])
+
+    def get_range(self):
+        return self.range
+
+    def get_number_of_bits_per_chromosome(self):
+        return self.number_of_bits
+
+    def get_size_of_individual(self):
+        return self.chromosomes_per_indiv

@@ -10,6 +10,6 @@ def booth_function_temp(Xs):
 
 
 def get_best(arr, minimalization):
-    values = [(ind, ind.get_dec_value()) for ind in arr]
+    values = [(ind, ind.get_func_value()) for ind in arr]
     val = lambda x: x[1]
-    return min(values, key=val)[0] if minimalization else max(values, key=val)
+    return min(values, key=val)[0] if minimalization else max(values, key=val)[0]

@@ -3,3 +3,5 @@ genetic/population_v1.py
 *.pyc
 genetic/__pycache__/*
 genetic/__pycache__/population.cpython-37.pyc
+population.cpython-37.pyc
+temp.py

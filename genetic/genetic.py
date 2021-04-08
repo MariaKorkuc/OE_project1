@@ -55,14 +55,6 @@ class Genetic:
 
     def get_mutation(self, probability):
         return m.Mutation(probability)
-        # if mutation_type == m.MutationType.one_point:
-        #     return mutation.one_point
-        # if mutation_type == m.MutationType.two_point:
-        #     return mutation.two_point
-        # if mutation_type == m.MutationType.inversion:
-        #     return mutation.inversion
-        # if mutation_type == m.MutationType.boundry:
-        #     return mutation.mutate_boundary
 
     def mutate(self, new_pop):
         if self.mutation_type == m.MutationType.boundry:
@@ -100,7 +92,10 @@ class Genetic:
         plt.plot(epochs, [x.get_func_value() for x in best])
         plt.xlabel('EPOCH')
         plt.ylabel('VALUE FOR BEST INDIVIDUAL')
-        plt.savefig('../Files/function_plot.png')
+        type = 'Min' if self.minimalization else "Max"
+        title = '_'.join((type, self.target_func.name))
+        plt.title(title)
+        plt.savefig(f'../Files/{type}_{self.target_func.name}_{self.selection_method.name}_{self.cross_degree.name}_{self.mutation_type.name}.png')
 
     def get_mean_sd(self):
         values = np.array([x[1].get_func_value() for x in self.best_individuals])
@@ -141,7 +136,8 @@ class Genetic:
             self.genetic_algorithm()
 
 if __name__ == '__main__':
-    gen = Genetic(minimalization=True, selection_method=sel_met.SelectionMethod.best, best_sel_proc=20)
+    gen = Genetic(minimalization=True, selection_method=sel_met.SelectionMethod.tournament, tournament_size=6,
+                  cross_degree=crossover.CrossDegree.homogenous, mutation_type=m.MutationType.two_point, target_function=gen_utils.TargetFunction.easom)
     gen.run_genetic_algorithm()
     print(gen.get_mean_sd())
     print(gen.gettime())

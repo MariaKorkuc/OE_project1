@@ -8,6 +8,8 @@ import sys
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+import tkinter as tk
+import tkinter.ttk as ttk
 
 
 class Genetic:
@@ -15,7 +17,7 @@ class Genetic:
     def __init__(self,
                  number_of_epochs=300,
                  size_of_population=50,
-                 value_range=(-10,10),
+                 value_range=(-10, 10),
                  number_of_bits=15,
                  chromosomes_per_ind=2,
                  target_function=gen_utils.TargetFunction.booth,
@@ -44,9 +46,9 @@ class Genetic:
         self.target_func = target_function
         self.selection_method = selection_method
         self.mutation_type = mutation_type
-        self.population = self.get_initial_population(size_of_population, value_range[0], value_range[1], number_of_bits, chromosomes_per_ind)
+        self.population = self.get_initial_population(size_of_population, value_range[0], value_range[1],
+                                                      number_of_bits, chromosomes_per_ind)
         self.mutation = self.get_mutation(probablility_of_mutation)
-
 
     def get_initial_population(self, size, range_start, range_stop, number_of_bits,
                                chromosomes_per_individual=2):
@@ -95,7 +97,8 @@ class Genetic:
         type = 'Min' if self.minimalization else "Max"
         title = '_'.join((type, self.target_func.name))
         plt.title(title)
-        plt.savefig(f'../Files/{type}_{self.target_func.name}_{self.selection_method.name}_{self.cross_degree.name}_{self.mutation_type.name}.png')
+        plt.savefig(
+            f'../Files/{type}_{self.target_func.name}_{self.selection_method.name}_{self.cross_degree.name}_{self.mutation_type.name}.png')
 
     def get_mean_sd(self):
         values = np.array([x[1].get_func_value() for x in self.best_individuals])
@@ -135,10 +138,150 @@ class Genetic:
         else:
             self.genetic_algorithm()
 
-if __name__ == '__main__':
+
+def initializeForm():
+    window = tk.Tk()
+
+    lbl_begin = tk.Label(window, text="Begin (-10)")
+    lbl_begin.pack()
+    begin = tk.Entry(window)
+    begin.pack()
+
+    lbl_end = tk.Label(window, text="End (10)")
+    lbl_end.pack()
+    end = tk.Entry(window)
+    end.pack()
+
+    lbl_epochs = tk.Label(window, text="Epochs amount (300)")
+    lbl_epochs.pack()
+    epochs = tk.Entry(window)
+    epochs.pack()
+
+    lbl_population = tk.Label(window, text="Population amount (50)")
+    lbl_population.pack()
+    population = tk.Entry(window)
+    population.pack()
+
+    lbl_bits = tk.Label(window, text="Number of bits (15)")
+    lbl_bits.pack()
+    bits = tk.Entry(window)
+    bits.pack()
+
+    lbl_cross_prob = tk.Label(window, text="Mutation probability (0.5)")
+    lbl_cross_prob.pack()
+    cross_prob = tk.Entry(window)
+    cross_prob.pack()
+
+    lbl_tournament_chrom = tk.Label(window, text="Tournament chromosome amount (6)")
+    lbl_tournament_chrom.pack()
+    tournament_chrom = tk.Entry(window)
+    tournament_chrom.pack()
+
+    minimization = tk.IntVar()
+    min = tk.Checkbutton(window, text="Minimization", variable=minimization)
+    min.pack()
+
+    selection_method = ("Best", "Tournament", "Roulette")
+    sel = ttk.Combobox(window, values=selection_method)
+    sel.pack()
+
+    cross_method = ("Homogeneous", "One point", "Two point", "Three point")
+    cross = ttk.Combobox(window, values=cross_method)
+    cross.pack()
+
+    mutation_method = ("One point", "Two point", "Inversion", "Boundary")
+    mut = ttk.Combobox(window, values=mutation_method)
+    mut.pack()
+
+    submit_button = tk.Button(window, text='Submit', command=lambda: submit(
+        int(epochs.get()),
+        int(population.get()),
+        int(begin.get()),
+        int(end.get()),
+        int(bits.get()),
+        cross_prob.get(),
+        int(tournament_chrom.get()),
+        minimization.get(),
+        sel.get(),
+        cross.get(),
+        mut.get()
+    ))
+    submit_button.pack()
+
+    window.title('Generic algorithm')
+    window.geometry("250x500+10+10")
+    window.mainloop()
+
+
+def submit(epochs, population, begin, end, bits, tournament_chromosome, mut_prob, minimization, selection, cross,
+           mutation):
+    print(selection, cross, mutation)
+    print(convertSelectionMethods(selection))
+    print(convertCrossMethods(cross))
+    print(convertSelectionMethods(selection))
+    # gen = Genetic(number_of_epochs=epochs,
+    #               size_of_population=population,
+    #               value_range=(begin, end),
+    #               number_of_bits=bits,
+    #               minimalization=True if minimization == 1 else False,
+    #               selection_method=convertSelectionMethods(selection),
+    #               tournament_size=tournament_chromosome,
+    #               cross_degree=crossover.CrossDegree.homogenous,
+    #               mutation_type=m.MutationType.two_point,
+    #               probablility_of_mutation=0.5,  # TODO: change on variable
+    #               target_function=gen_utils.TargetFunction.easom)
     gen = Genetic(minimalization=True, selection_method=sel_met.SelectionMethod.tournament, tournament_size=6,
-                  cross_degree=crossover.CrossDegree.homogenous, mutation_type=m.MutationType.two_point, target_function=gen_utils.TargetFunction.easom)
+                  cross_degree=crossover.CrossDegree.homogenous, mutation_type=m.MutationType.two_point,
+                  target_function=gen_utils.TargetFunction.easom)
     gen.run_genetic_algorithm()
-    print(gen.get_mean_sd())
-    print(gen.gettime())
+    showResult(gen.get_mean_sd(), gen.gettime())
     gen.plot_results()
+
+
+def convertSelectionMethods(method):
+    return {
+        "Best": sel_met.SelectionMethod.best,
+        "Tournament": sel_met.SelectionMethod.tournament,
+        "Roulette": sel_met.SelectionMethod.roulette
+    }[method]
+
+def convertCrossMethods(method):
+    return {
+        "Homogeneous": crossover.CrossDegree.homogenous,
+        "One point": crossover.CrossDegree.one_point,
+        "Two point": crossover.CrossDegree.two_point,
+        "Three point": crossover.CrossDegree.three_point
+    }[method]
+
+def convertMutationMethods(method):
+    return {
+        "One point": m.MutationType.one_point,
+        "Two point": m.MutationType.two_point,
+        "Boundary": m.MutationType.boundry,
+        "Inversion": m.MutationType.inversion
+    }[method]
+
+
+def showResult(mean, timer):
+    window = tk.Tk()
+
+    lbl = tk.Label(window, text="Mean")
+    lbl.pack()
+    mean_label = tk.Label(window, text=mean)
+    mean_label.pack()
+
+    lbl = tk.Label(window, text="Execution time")
+    lbl.pack()
+    time_label = tk.Label(window, text=timer)
+    time_label.pack()
+
+    quit_button = tk.Button(window, text='Quit', command=window.destroy)
+    quit_button.pack()
+
+    window.title('Results')
+    window.geometry("250x200+10+10")
+    window.mainloop()
+
+
+if __name__ == '__main__':
+    initializeForm()

@@ -1,5 +1,5 @@
 import numpy as np
-import OE_project1.genetic.Geneticutils as gen
+import genetic.Geneticutils as gen
 import random
 
 
@@ -16,12 +16,16 @@ class Chromosome:
         return self.binary
 
     def get_decimal(self):
-        return self.start + int(self.binary_string, 2)*self.step
+        return self.start + int(self.binary_string, 2) * self.step
+
+    def set_binary(self, chromosome):
+        self.binary = chromosome
+        self.binary_string = ''.join(str(b) for b in self.binary)
 
     def count_step(self):
         range_size = self.stop - self.start
         possible_combinations = np.power(2, self.number_of_bits)
-        return range_size/(possible_combinations - 1)
+        return range_size / (possible_combinations - 1)
 
     def __str__(self):
         return self.binary_string + ' (' + str(self.get_decimal()) + ')'
@@ -96,4 +100,3 @@ class Population:
 
     def get_size_of_individual(self):
         return self.chromosomes_per_indiv
-

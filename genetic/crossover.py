@@ -1,5 +1,5 @@
 import random
-from OE_project1.genetic.population import Individual, Chromosome
+from OE_project1.genetic.population import Population, Individual, Chromosome
 from OE_project1.genetic.selection_methods import SelectionMethod
 import OE_project1.genetic.selection_methods as selection
 
@@ -36,7 +36,7 @@ def cross(binary1, binary2, cross_degree, number_of_bits):
     exchange = False
 
     # idziemy po wszystkich bitach chromosomu
-    for i in number_of_bits:
+    for i in range(number_of_bits):
         # patrzymy na punkt krzyżowania - jeśli go przekraczamy, to zmieniamy wartosc exchange,
         if point_index < len(cross_points) and i == cross_points[point_index]:
             exchange = not exchange
@@ -99,6 +99,48 @@ def create_new_population(population, selection_method, cross_degree, minimaliza
     pop_size = len(population)
     new_individuals = []
 
-    while len(new_individuals) < pop_size:
-        if selection_method == SelectionMethod.best:
-            best = selection.selection_of_best(population, selection_args['proc_of_chosen'], minimalization)
+    if selection_method == SelectionMethod.best:
+        best = selection.selection_of_best(population, selection_args['proc_of_chosen'], minimalization)
+        while len(new_individuals) < pop_size:
+            parents = random.sample(best, 2)
+            probability_of_crossover = random.random()
+            if probability_of_crossover >= 0.5:
+                children = \
+                    crossover(parents[0], parents[1], population.get_number_of_bits_per_chromosome(), cross_degree)
+                new_individuals.extend(children)
+    elif selection_method == SelectionMethod.tournament:
+        while len(new_individuals) < pop_size:
+            parents = \
+                [selection.tournament_selection(population, selection_args['size_of_tournament'], minimalization)
+                    for _ in range(2)]
+            probability_of_crossover = random.random()
+            if probability_of_crossover >= 0.5:
+                children = \
+                    crossover(parents[0], parents[1], population.get_number_of_bits_per_chromosome(), cross_degree)
+                new_individuals.extend(children)
+    elif selection_method == SelectionMethod.roulette:
+        while len(new_individuals) < pop_size:
+            parents = [selection.roulette_selection(population, minimalization) for _ in range(2)]
+            probability_of_crossover = random.random()
+            if probability_of_crossover >= 0.5:
+                children = \
+                    crossover(parents[0], parents[1], population.get_number_of_bits_per_chromosome(), cross_degree)
+                new_individuals.extend(children)
+    return Population(
+        pop_size,
+        population.get_range()[0],
+        population.get_range()[1],
+        population.get_number_of_bits_per_chromosome(),
+        individuals=new_individuals)
+
+
+if __name__ == '__main__':
+    pop = Population(size=30, range_start=-5, range_stop=5, number_of_bits=8, seed=None)
+    print(pop.get_sorted())
+    print('********* N E W *********')
+    new_pop = create_new_population(pop, SelectionMethod.best, 1, minimalization=True, proc_of_chosen=40)
+    # new_pop = create_new_population(pop, SelectionMethod.tournament, 1, minimalization=False, size_of_tournament=7)
+    # new_pop = create_new_population(pop, SelectionMethod.roulette, 1, minimalization=True)
+    print(new_pop.get_sorted())
+    print(f'--------------- SUM old: {pop.get_sum()} ----------------')
+    print(f'--------------- SUM new: {new_pop.get_sum()} ----------------')

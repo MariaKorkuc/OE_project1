@@ -30,7 +30,7 @@ def selection_of_best(population, proc_of_chosen, minimalization=True):
 def tournament(individuals, size_of_tournament, minimalization):
     # jeśli zostal tylko jeden osobnik w liscie - zwracamy zwyciesce
     if len(individuals) == 1:
-        return individuals
+        return individuals[0]
 
     # obliczenie liczby turniejow w zaleznosci od aktualnej wielkosci listy osobnikow i wielkosci turnieju
     number_of_tournaments = len(individuals) // size_of_tournament
@@ -57,8 +57,9 @@ def tournament(individuals, size_of_tournament, minimalization):
 
 def tournament_selection(population, size_of_tournament, minimalization=True):
     # permutacje zeby nie wybierac zawsze tych samych grup turniejowych
-    shuffled = np.random.permutation(population) #now we'll take indexes one after another to have random tournaments
-    return tournament(shuffled.tolist(), size_of_tournament, minimalization)
+    shuffled_indexes = np.random.permutation([i for i in range(len(population))])
+    shuffled_pop = [population[i] for i in shuffled_indexes]  #now we'll take indexes one after another to have random tournaments
+    return tournament(shuffled_pop, size_of_tournament, minimalization)
     # number_of_tournaments = shuffled.size//size_of_tournament
 
     # if shuffled.size%size_of_tournament:
@@ -99,9 +100,9 @@ def roulette_selection(population, minimalization=True):
     distributions = get_distributions(population, minimalization)
     # spięcie wartosci w tuple: (osobnik, dystrybuanta)
     values = tuple(zip(population, distributions))
-
     # ruletka
-    random_prob = np.random.rand()
+    # random_prob = np.random.rand()
+    random_prob = np.random.uniform(min(distributions), max(distributions))
     result = values[0][0]
     for ind, d in values:
         if d < random_prob:

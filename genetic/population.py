@@ -97,3 +97,6 @@ class Population:
     def get_size_of_individual(self):
         return self.chromosomes_per_indiv
 
+    def get_sum(self):
+        return sum([ind.get_func_value() for ind in self.individuals])
+

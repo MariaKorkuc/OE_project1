@@ -101,8 +101,8 @@ def crossover(first_ind, second_ind, number_of_bits, target_func, cross_degree=C
         Individual(value_range, number_of_bits, number_of_chromosomes_per_ind, target_func, new_chromosomes_2)
 
 
-def create_new_population(population, selection_method, cross_degree, minimalization, selection_best_proc=None, tournament_size=None):
-    pop_size = len(population)
+def create_new_population(population, selection_method, cross_degree, minimalization, selection_best_proc=None, tournament_size=None, elitist_length=0):
+    pop_size = len(population) - elitist_length
     target_func = population.get_target_func()
     new_individuals = []
     best_individual = None

@@ -1,6 +1,7 @@
 import numpy as np
 import OE_project1.genetic.Geneticutils as gen
 import random
+from OE_project1.genetic.Geneticutils import TargetFunction
 
 
 class Chromosome:
@@ -15,6 +16,10 @@ class Chromosome:
     def get_binary(self):
         return self.binary
 
+    def set_binary(self, chromosome):
+        self.binary = chromosome
+        self.binary_string = ''.join(str(b) for b in self.binary)
+
     def get_decimal(self):
         return self.start + int(self.binary_string, 2)*self.step
 
@@ -28,14 +33,24 @@ class Chromosome:
 
 
 class Individual:
-    def __init__(self, value_range, number_of_bits, number_of_chromosomes, chromosomes=None):
+    def __init__(self, value_range, number_of_bits, number_of_chromosomes, target_func, chromosomes=None):
         self.chromosomes = [Chromosome(number_of_bits, value_range) for _ in range(number_of_chromosomes)] \
             if not chromosomes else chromosomes
-        self.func_value = gen.chosen_func(self.get_dec_value())
+        self.target_func = target_func
+        self.func_value = self.set_target_func_value()
         self.value_range = value_range
 
     def get_chromosomes(self):
         return self.chromosomes
+
+    def set_target_func_value(self):
+        if self.target_func == gen.TargetFunction.booth:
+            return gen.booth_function(self.get_dec_value())
+        if self.target_func == gen.TargetFunction.easom:
+            return gen.easom_function(self.get_dec_value())
+
+    def get_target_func(self):
+        return self.target_func
 
     def __len__(self):
         return len(self.chromosomes)
@@ -60,9 +75,18 @@ class Individual:
 
 
 class Population:
-    def __init__(self, size, range_start, range_stop, number_of_bits, chromosomes_per_individual=2, individuals=None, seed=None):
+    def __init__(self,
+                 size,
+                 range_start,
+                 range_stop,
+                 number_of_bits,
+                 target_func=gen.TargetFunction.booth,
+                 chromosomes_per_individual=2,
+                 individuals=None,
+                 seed=None):
         if seed:
             random.seed(seed)
+        self.target_func = target_func
         self.range = (range_start, range_stop)
         self.size = size
         self.chromosomes_per_indiv = chromosomes_per_individual
@@ -70,7 +94,7 @@ class Population:
         self.individuals = self.set_individuals() if not individuals else individuals
 
     def set_individuals(self):
-        return [Individual(self.range, self.number_of_bits, self.chromosomes_per_indiv) for _ in range(self.size)]
+        return [Individual(self.range, self.number_of_bits, self.chromosomes_per_indiv, self.target_func) for _ in range(self.size)]
 
     def __len__(self):
         return self.size
@@ -99,4 +123,7 @@ class Population:
 
     def get_sum(self):
         return sum([ind.get_func_value() for ind in self.individuals])
+
+    def get_target_func(self):
+        return self.target_func
 

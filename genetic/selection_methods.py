@@ -58,7 +58,7 @@ def tournament(individuals, size_of_tournament, minimalization):
 def tournament_selection(population, size_of_tournament, minimalization=True):
     # permutacje zeby nie wybierac zawsze tych samych grup turniejowych
     shuffled_indexes = np.random.permutation([i for i in range(len(population))])
-    shuffled_pop = [population[i] for i in shuffled_indexes]  #now we'll take indexes one after another to have random tournaments
+    shuffled_pop = [population[i] for i in shuffled_indexes]  #now we'll take indexes one_point after another to have random tournaments
     return tournament(shuffled_pop, size_of_tournament, minimalization)
     # number_of_tournaments = shuffled.size//size_of_tournament
 
@@ -77,12 +77,17 @@ def tournament_selection(population, size_of_tournament, minimalization=True):
 
 # zwraca dystrybuanty do selekcji kolem ruletki
 def get_distributions(population, minimalization):
+    # skalowanie funkcji - unikanie ujemnych prawdopodobienstw, jesli istnieje ujemne wartosci
+    min_func_val = min([ind.get_func_value() for ind in population])
+    scale = abs(min_func_val) + 1 if min_func_val < 0 else 0
+
+
     # liczenie wartosci dla kazdego odobnika, wzor inny dla mini i maksymalizacji
     if minimalization:
-        values = [1/ind.get_func_value() for ind in population]
+        values = [1/(ind.get_func_value() + scale) for ind in population]
         sum_func = sum(1/v for v in values)
     else:
-        values = [ind.get_func_value() for ind in population]
+        values = [(ind.get_func_value() + scale) for ind in population]
         sum_func = sum(values)
     # prawdopodobienstwa dla kazdego osobnika
     probabilities = [val / sum_func for val in values]
@@ -120,6 +125,6 @@ if __name__ == '__main__':
     print("\n******************best************************")
     # for b in selection_of_best(pop, 35):
     #     print(b)
-    for b in tournament_selection(pop, 3):
-        print(b)
-    # print(roulette_selection(pop, minimalization=True))
+    # for b in tournament_selection(pop, 3):
+    #     print(b)
+    print(roulette_selection(pop, minimalization=True))

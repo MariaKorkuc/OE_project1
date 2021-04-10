@@ -1,7 +1,6 @@
 import numpy as np
 import OE_project1.genetic.Geneticutils as gen
 import random
-from OE_project1.genetic.Geneticutils import TargetFunction
 
 
 class Chromosome:
@@ -99,8 +98,6 @@ class Population:
     def add_ind(self, individuals):
         self.individuals.extend(individuals)
         self.size = len(self.individuals)
-        # for ind in individuals:
-        #     self.individuals.append(ind)
 
     def __len__(self):
         return self.size

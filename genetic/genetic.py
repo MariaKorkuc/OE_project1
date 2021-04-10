@@ -311,22 +311,3 @@ def showResult(mean, timer):
 
 if __name__ == '__main__':
     initializeForm()
-    # gen = Genetic(number_of_epochs=800,
-    #               size_of_population=150,
-    #               value_range=(-15, 15),
-    #               number_of_bits=10,
-    #               chromosomes_per_ind=2,
-    #               target_function=gen_utils.TargetFunction.booth,
-    #               selection_method=sel_met.SelectionMethod.tournament,
-    #               minimalization=True,
-    #               cross_degree=crossover.CrossDegree.three_point,
-    #               mutation_type=m.MutationType.one_point,
-    #               probablility_of_mutation=0.4,
-    #               proc_of_ind_for_elit=5,
-    #               best_sel_proc=30,
-    #               tournament_size=6,
-    #               filename='../Files/results_1.txt')
-    # gen.run_genetic_algorithm()
-    # print(gen.get_mean_sd())
-    # print(gen.gettime())
-    # gen.plot_results()

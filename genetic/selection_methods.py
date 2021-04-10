@@ -21,6 +21,7 @@ def selection_of_best(population, proc_of_chosen, minimalization=True):
 
     # obliczenie ile najlepszych wybieramy sposrod populacji na podstawie przekazanego procenta
     number_of_best = int(length * proc_of_chosen/100)
+    number_of_best = max((1,number_of_best))
     chosen = [sorted_individuals[i] for i in range(number_of_best)]
 
     # zwrocenie najlepszych osobnikow

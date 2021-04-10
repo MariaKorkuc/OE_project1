@@ -26,7 +26,7 @@ class Genetic:
                  cross_degree=crossover.CrossDegree.one_point,
                  mutation_type=m.MutationType.one_point,
                  probablility_of_mutation=0.5,
-                 proc_of_ind_for_elit=50,
+                 proc_of_ind_for_elit=5,
                  best_sel_proc=None,
                  tournament_size=None,
                  filename='result',
@@ -49,6 +49,7 @@ class Genetic:
         self.population = self.get_initial_population(size_of_population, value_range[0], value_range[1],
                                                       number_of_bits, chromosomes_per_ind)
         self.mutation = self.get_mutation(probablility_of_mutation)
+        self.proc_of_elite = proc_of_ind_for_elit
 
     def get_initial_population(self, size, range_start, range_stop, number_of_bits,
                                chromosomes_per_individual=2):
@@ -77,15 +78,23 @@ class Genetic:
                 self.mutation.inversion(ind[1])
 
     def epoch(self):
-        elitist = sel_met.selection_of_best(self.population, 5, self.minimalization)
+        elitist = sel_met.selection_of_best(self.population, self.proc_of_elite, self.minimalization)
+        # print(len(elitist))
         new_pop, current_best = crossover.create_new_population(self.population, self.selection_method,
                                                                 self.cross_degree, self.minimalization,
                                                                 self.selection_best_proc, self.tournament_size,
                                                                 len(elitist))
         self.mutate(new_pop)
         if len(elitist) > 0:
-            new_pop.append_chromosome(elitist)
+            new_pop.add_ind(elitist)
         self.population = new_pop
+
+        best_elite_value = elitist[0].get_func_value()
+        current_best_value = current_best.get_func_value()
+        if self.minimalization:
+            current_best = current_best if best_elite_value > current_best_value else elitist[0]
+        else:
+            current_best = current_best if best_elite_value < current_best_value else elitist[0]
         return current_best
 
     def gettime(self):
@@ -295,4 +304,23 @@ def showResult(mean, timer):
 
 
 if __name__ == '__main__':
-    initializeForm()
+    # initializeForm()
+    gen = Genetic(number_of_epochs=800,
+                  size_of_population=150,
+                  value_range=(-15, 15),
+                  number_of_bits=10,
+                  chromosomes_per_ind=2,
+                  target_function=gen_utils.TargetFunction.booth,
+                  selection_method=sel_met.SelectionMethod.tournament,
+                  minimalization=True,
+                  cross_degree=crossover.CrossDegree.three_point,
+                  mutation_type=m.MutationType.one_point,
+                  probablility_of_mutation=0.4,
+                  proc_of_ind_for_elit=5,
+                  best_sel_proc=30,
+                  tournament_size=6,
+                  filename='../Files/results_1.txt')
+    gen.run_genetic_algorithm()
+    print(gen.get_mean_sd())
+    print(gen.gettime())
+    gen.plot_results()

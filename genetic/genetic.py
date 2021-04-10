@@ -79,7 +79,6 @@ class Genetic:
 
     def epoch(self):
         elitist = sel_met.selection_of_best(self.population, self.proc_of_elite, self.minimalization)
-        # print(len(elitist))
         new_pop, current_best = crossover.create_new_population(self.population, self.selection_method,
                                                                 self.cross_degree, self.minimalization,
                                                                 self.selection_best_proc, self.tournament_size,
@@ -101,7 +100,6 @@ class Genetic:
         return self.end_time - self.start_time
 
     def plot_results(self):
-        print('plot')
         unzipped = list(zip(*self.best_individuals))
         epochs = unzipped[0]
         best = unzipped[1]

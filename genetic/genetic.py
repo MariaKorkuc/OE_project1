@@ -79,7 +79,6 @@ class Genetic:
 
     def epoch(self):
         elitist = sel_met.selection_of_best(self.population, self.proc_of_elite, self.minimalization)
-        # print(len(elitist))
         new_pop, current_best = crossover.create_new_population(self.population, self.selection_method,
                                                                 self.cross_degree, self.minimalization,
                                                                 self.selection_best_proc, self.tournament_size,
@@ -199,14 +198,20 @@ def initializeForm():
     min = tk.Checkbutton(window, text="Minimization", variable=minimization)
     min.pack()
 
+    lbl_selection = tk.Label(window, text="Selection method")
+    lbl_selection.pack()
     selection_method = ("Best", "Tournament", "Roulette")
     sel = ttk.Combobox(window, values=selection_method)
     sel.pack()
 
+    lbl_crossover = tk.Label(window, text="Crossover method")
+    lbl_crossover.pack()
     cross_method = ("Homogeneous", "One point", "Two point", "Three point")
     cross = ttk.Combobox(window, values=cross_method)
     cross.pack()
 
+    lbl_mutation = tk.Label(window, text="Mutation method")
+    lbl_mutation.pack()
     mutation_method = ("One point", "Two point", "Inversion", "Boundary")
     mut = ttk.Combobox(window, values=mutation_method)
     mut.pack()
@@ -231,7 +236,7 @@ def initializeForm():
     quit_button.pack()
 
     window.title('Generic algorithm')
-    window.geometry("250x500+10+10")
+    window.geometry("250x550+10+10")
     window.mainloop()
 
 
@@ -252,8 +257,9 @@ def submit(epochs, population, begin, end, bits, tournament_chromosome, mut_prob
                   )
 
     gen.run_genetic_algorithm()
-    showResult(gen.get_mean_sd(), gen.gettime())
     gen.plot_results()
+    showResult(gen.get_mean_sd(), gen.gettime())
+
 
 
 def convertSelectionMethods(method):
@@ -304,23 +310,23 @@ def showResult(mean, timer):
 
 
 if __name__ == '__main__':
-    # initializeForm()
-    gen = Genetic(number_of_epochs=800,
-                  size_of_population=150,
-                  value_range=(-15, 15),
-                  number_of_bits=10,
-                  chromosomes_per_ind=2,
-                  target_function=gen_utils.TargetFunction.booth,
-                  selection_method=sel_met.SelectionMethod.tournament,
-                  minimalization=True,
-                  cross_degree=crossover.CrossDegree.three_point,
-                  mutation_type=m.MutationType.one_point,
-                  probablility_of_mutation=0.4,
-                  proc_of_ind_for_elit=5,
-                  best_sel_proc=30,
-                  tournament_size=6,
-                  filename='../Files/results_1.txt')
-    gen.run_genetic_algorithm()
-    print(gen.get_mean_sd())
-    print(gen.gettime())
-    gen.plot_results()
+    initializeForm()
+    # gen = Genetic(number_of_epochs=800,
+    #               size_of_population=150,
+    #               value_range=(-15, 15),
+    #               number_of_bits=10,
+    #               chromosomes_per_ind=2,
+    #               target_function=gen_utils.TargetFunction.booth,
+    #               selection_method=sel_met.SelectionMethod.tournament,
+    #               minimalization=True,
+    #               cross_degree=crossover.CrossDegree.three_point,
+    #               mutation_type=m.MutationType.one_point,
+    #               probablility_of_mutation=0.4,
+    #               proc_of_ind_for_elit=5,
+    #               best_sel_proc=30,
+    #               tournament_size=6,
+    #               filename='../Files/results_1.txt')
+    # gen.run_genetic_algorithm()
+    # print(gen.get_mean_sd())
+    # print(gen.gettime())
+    # gen.plot_results()

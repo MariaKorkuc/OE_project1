@@ -77,10 +77,14 @@ class Genetic:
                 self.mutation.inversion(ind[1])
 
     def epoch(self):
+        elitist = sel_met.selection_of_best(self.population, 5, self.minimalization)
         new_pop, current_best = crossover.create_new_population(self.population, self.selection_method,
                                                                 self.cross_degree, self.minimalization,
-                                                                self.selection_best_proc, self.tournament_size)
+                                                                self.selection_best_proc, self.tournament_size,
+                                                                len(elitist))
         self.mutate(new_pop)
+        if len(elitist) > 0:
+            new_pop.append_chromosome(elitist)
         self.population = new_pop
         return current_best
 
@@ -233,7 +237,7 @@ def submit(epochs, population, begin, end, bits, tournament_chromosome, mut_prob
                   tournament_size=int(tournament_chromosome),
                   cross_degree=convertCrossMethods(cross),
                   mutation_type=convertMutationMethods(mutation),
-                  target_function=gen_utils.TargetFunction.easom,
+                  target_function=gen_utils.TargetFunction.booth,
                   best_sel_proc=int(best_proc),
                   probablility_of_mutation=int(mut_prob) / 100
                   )
@@ -272,7 +276,7 @@ def convertMutationMethods(method):
 def showResult(mean, timer):
     window = tk.Tk()
 
-    lbl = tk.Label(window, text="Mean")
+    lbl = tk.Label(window, text="Mean | Standard deviation")
     lbl.pack()
     mean_label = tk.Label(window, text=mean)
     mean_label.pack()

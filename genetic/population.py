@@ -96,6 +96,10 @@ class Population:
     def set_individuals(self):
         return [Individual(self.range, self.number_of_bits, self.chromosomes_per_indiv, self.target_func) for _ in range(self.size)]
 
+    def append_chromosome(self, chromosomes):
+        for i in chromosomes:
+            self.individuals.append(i)
+
     def __len__(self):
         return self.size
 

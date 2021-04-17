@@ -29,7 +29,7 @@ class Genetic:
                  proc_of_ind_for_elit=5,
                  best_sel_proc=None,
                  tournament_size=None,
-                 filename='result',
+                 filename='../Files/result.txt',
                  seed=None):
         if seed:
             random.seed(seed)

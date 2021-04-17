@@ -4,13 +4,17 @@ import random
 
 
 class Chromosome:
-    def __init__(self, number_of_bits, value_range, binary=None):
-        self.binary = [random.randint(0,1) for _ in range(number_of_bits)] if not binary else binary
-        self.binary_string = ''.join(str(b) for b in self.binary)
+    def __init__(self, number_of_bits, value_range, binary=None, decimal=None):
         self.number_of_bits = number_of_bits
         self.start = value_range[0]
         self.stop = value_range[1]
         self.step = self.count_step()
+        if decimal:
+            self.set_decimal(decimal)
+        else:
+            self.binary = [random.randint(0,1) for _ in range(number_of_bits)] if not binary else binary
+            self.binary_string = ''.join(str(b) for b in self.binary)
+            self.set_initial_decimal()
 
     def get_binary(self):
         return self.binary
@@ -18,9 +22,26 @@ class Chromosome:
     def set_binary(self, chromosome):
         self.binary = chromosome
         self.binary_string = ''.join(str(b) for b in self.binary)
+        self.decimal = self.set_initial_decimal()
+        self.only_decimal = False
+
+    def set_initial_decimal(self):
+        self.decimal = self.start + int(self.binary_string, 2)*self.step
+
+    def set_decimal(self, decimal):
+        self.decimal = decimal
+        self.set_binary_from_decimal()
 
     def get_decimal(self):
-        return self.start + int(self.binary_string, 2)*self.step
+        return self.decimal
+
+    def set_binary_from_decimal(self):
+        b = int((self.decimal - self.start) / self.step)
+        b_str = bin(b)[2:]
+        while len(b_str) < self.number_of_bits:
+            b_str = ''.join(['0',b_str])
+        self.binary_string = b_str
+        self.binary = [int(a) for a in b_str]
 
     def count_step(self):
         range_size = self.stop - self.start

@@ -9,6 +9,21 @@ class CrossDegree(Enum):
     one_point = 1
     two_point = 2
     three_point = 3
+    heuristic = 4
+
+
+def heuristic_cross(ind1, ind2, value_range, number_of_bits, target_func):
+    real_ind_1 = ind1.get_dec_value()
+    real_ind_2 = ind2.get_dec_value()
+    if (real_ind_1[0] - real_ind_2[0])*(real_ind_1[1] - real_ind_2[1]) < 0:
+        return None
+
+    k = random.random()
+    x1 = k * abs(real_ind_2[0] - real_ind_1[0]) + min(real_ind_2[0], real_ind_1[0])
+    x2 = k * abs(real_ind_2[1] - real_ind_1[1]) + min(real_ind_2[1], real_ind_1[1])
+
+    chromosomes = [Chromosome(number_of_bits, value_range, decimal=x1), Chromosome(number_of_bits, value_range, decimal=x2)]
+    return Individual(value_range, number_of_bits, 2, target_func, chromosomes)
 
 
 def cross(binary1, binary2, cross_degree, number_of_bits):
@@ -53,6 +68,10 @@ def crossover(first_ind, second_ind, number_of_bits, target_func, cross_degree=C
     if len(first_ind) != len(second_ind):
         return None
 
+    if cross_degree == CrossDegree.heuristic:
+        ind = heuristic_cross(first_ind, second_ind, value_range, number_of_bits, target_func)
+        return [ind] if ind else None
+
     new_chromosomes_1 = []
     new_chromosomes_2 = []
 
@@ -85,7 +104,8 @@ def create_new_population(population, selection_method, cross_degree, minimaliza
             if probability_of_crossover >= 0.5:
                 children = \
                     crossover(parents[0], parents[1], population.get_number_of_bits_per_chromosome(), target_func, cross_degree)
-                new_individuals.extend(children)
+                if children:
+                    new_individuals.extend(children)
     elif selection_method == SelectionMethod.tournament:
         while len(new_individuals) < pop_size:
             parents = \
@@ -96,7 +116,8 @@ def create_new_population(population, selection_method, cross_degree, minimaliza
             if probability_of_crossover >= 0.5:
                 children = \
                     crossover(parents[0], parents[1], population.get_number_of_bits_per_chromosome(), target_func, cross_degree)
-                new_individuals.extend(children)
+                if children:
+                    new_individuals.extend(children)
     elif selection_method == SelectionMethod.roulette:
         while len(new_individuals) < pop_size:
             parents = [selection.roulette_selection(population, minimalization) for _ in range(2)]
@@ -105,7 +126,8 @@ def create_new_population(population, selection_method, cross_degree, minimaliza
             if probability_of_crossover >= 0.5:
                 children = \
                     crossover(parents[0], parents[1], population.get_number_of_bits_per_chromosome(), target_func, cross_degree)
-                new_individuals.extend(children)
+                if children:
+                    new_individuals.extend(children)
     return Population(
         pop_size,
         population.get_range()[0],

@@ -10,6 +10,24 @@ class CrossDegree(Enum):
     two_point = 2
     three_point = 3
     heuristic = 4
+    arithmetic = 5
+
+
+def arithmetic_cross(ind1, ind2, value_range, number_of_bits, target_func):
+    real_ind_1 = ind1.get_dec_value()
+    real_ind_2 = ind2.get_dec_value()
+    k = random.random()
+    print(real_ind_2)
+
+    x1 = k * real_ind_1[0] + (1-k) * real_ind_2[0]
+    y1 = k * real_ind_1[1] + (1-k) * real_ind_2[1]
+
+    x2 = (1-k) * real_ind_1[0] + k * real_ind_2[0]
+    y2 = (1-k) * real_ind_1[1] + k * real_ind_2[1]
+
+    chromosomes1 = [Chromosome(number_of_bits, value_range, decimal=x1), Chromosome(number_of_bits, value_range, decimal=y1)]
+    chromosomes2 = [Chromosome(number_of_bits, value_range, decimal=x2), Chromosome(number_of_bits, value_range, decimal=y2)]
+    return [Individual(value_range, number_of_bits, 2, target_func, chromosomes1), Individual(value_range, number_of_bits, 2, target_func, chromosomes2)]
 
 
 def heuristic_cross(ind1, ind2, value_range, number_of_bits, target_func):
@@ -71,6 +89,9 @@ def crossover(first_ind, second_ind, number_of_bits, target_func, cross_degree=C
     if cross_degree == CrossDegree.heuristic:
         ind = heuristic_cross(first_ind, second_ind, value_range, number_of_bits, target_func)
         return [ind] if ind else None
+
+    if cross_degree == CrossDegree.arithmetic:
+        return arithmetic_cross(first_ind, second_ind, value_range, number_of_bits, target_func)
 
     new_chromosomes_1 = []
     new_chromosomes_2 = []

@@ -9,6 +9,12 @@ import tkinter.ttk as ttk
 def initializeForm():
     window = tk.Tk()
 
+    lbl_function = tk.Label(window, text="Function")
+    lbl_function.pack()
+    function_option = ("Booth", "Easom")
+    function = ttk.Combobox(window, values=function_option)
+    function.pack()
+
     lbl_begin = tk.Label(window, text="Begin")
     lbl_begin.pack()
     begin = tk.Entry(window)
@@ -44,6 +50,11 @@ def initializeForm():
     best_proc = tk.Entry(window)
     best_proc.pack()
 
+    lbl_elitist = tk.Label(window, text="Elitist strategy  %")
+    lbl_elitist.pack()
+    elitist_proc = tk.Entry(window)
+    elitist_proc.pack()
+
     lbl_tournament_chrom = tk.Label(window, text="Tournament chromosome amount")
     lbl_tournament_chrom.pack()
     tournament_chrom = tk.Entry(window)
@@ -61,15 +72,19 @@ def initializeForm():
 
     lbl_crossover = tk.Label(window, text="Crossover method")
     lbl_crossover.pack()
-    cross_method = ("Homogeneous", "One point", "Two point", "Three point", "Heuristic")
+    cross_method = ("Homogeneous", "One point", "Two point", "Three point", "Arithmetic", "Heuristic")
     cross = ttk.Combobox(window, values=cross_method)
     cross.pack()
 
     lbl_mutation = tk.Label(window, text="Mutation method")
     lbl_mutation.pack()
-    mutation_method = ("One point", "Two point", "Inversion", "Boundary", "Uniform")
+    mutation_method = ("One point", "Two point", "Boundary", "Uniform")
     mut = ttk.Combobox(window, values=mutation_method)
     mut.pack()
+
+    inversion = tk.IntVar()
+    inv = tk.Checkbutton(window, text="Inversion", variable=inversion)
+    inv.pack()
 
     submit_button = tk.Button(window, text='Submit', command=lambda: submit(
         epochs.get(),
@@ -83,7 +98,10 @@ def initializeForm():
         sel.get(),
         cross.get(),
         mut.get(),
-        best_proc.get()
+        best_proc.get(),
+        function.get(),
+        elitist_proc.get(),
+        inversion.get(),
     ))
     submit_button.pack()
 
@@ -91,12 +109,12 @@ def initializeForm():
     quit_button.pack()
 
     window.title('Generic algorithm')
-    window.geometry("250x550+10+10")
+    window.geometry("250x650+10+10")
     window.mainloop()
 
 
 def submit(epochs, population, begin, end, bits, tournament_chromosome, mut_prob, minimization, selection, cross,
-           mutation, best_proc):
+           mutation, best_proc, function, elitist_proc, inversion):
     gen = Genetic(number_of_epochs=int(epochs),
                   size_of_population=int(population),
                   value_range=(int(begin), int(end)),
@@ -106,9 +124,11 @@ def submit(epochs, population, begin, end, bits, tournament_chromosome, mut_prob
                   tournament_size=int(tournament_chromosome),
                   cross_degree=convertCrossMethods(cross),
                   mutation_type=convertMutationMethods(mutation),
-                  target_function=gen_utils.TargetFunction.booth,
+                  target_function=convertFunction(function),
                   best_sel_proc=int(best_proc),
-                  probablility_of_mutation=int(mut_prob) / 100
+                  probablility_of_mutation=int(mut_prob) / 100,
+                  proc_of_ind_for_elit=int(elitist_proc),
+                  make_inversion=True if inversion == 1 else False
                   )
 
     gen.run_genetic_algorithm()
@@ -131,7 +151,8 @@ def convertCrossMethods(method):
         "One point": crossover.CrossDegree.one_point,
         "Two point": crossover.CrossDegree.two_point,
         "Three point": crossover.CrossDegree.three_point,
-        "Heuristic": crossover.CrossDegree.heuristic
+        "Arithmetic": crossover.CrossDegree.arithmetic,
+        "Heuristic": crossover.CrossDegree.heuristic,
     }[method]
 
 
@@ -142,6 +163,13 @@ def convertMutationMethods(method):
         "Boundary": m.MutationType.boundry,
         "Inversion": m.MutationType.inversion,
         "Uniform": m.MutationType.uniform
+    }[method]
+
+
+def convertFunction(method):
+    return {
+        "Booth": gen_utils.TargetFunction.booth,
+        "Easom": gen_utils.TargetFunction.easom,
     }[method]
 
 

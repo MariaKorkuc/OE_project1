@@ -23,6 +23,7 @@ class Genetic:
                  minimalization=True,
                  cross_degree=crossover.CrossDegree.one_point,
                  mutation_type=m.MutationType.one_point,
+                 make_inversion=False,
                  probablility_of_mutation=0.5,
                  proc_of_ind_for_elit=5,
                  best_sel_proc=None,
@@ -44,6 +45,7 @@ class Genetic:
         self.target_func = target_function
         self.selection_method = selection_method
         self.mutation_type = mutation_type
+        self.make_inversion = make_inversion
         self.population = self.get_initial_population(size_of_population, value_range[0], value_range[1],
                                                       number_of_bits, chromosomes_per_ind)
         self.mutation = self.get_mutation(probablility_of_mutation)
@@ -70,13 +72,13 @@ class Genetic:
             for ind in new_pop:
                 self.mutation.two_point(ind[0])
                 self.mutation.two_point(ind[1])
-        if self.mutation_type == m.MutationType.inversion:
-            for ind in new_pop:
-                self.mutation.inversion(ind[0])
-                self.mutation.inversion(ind[1])
         if self.mutation_type == m.MutationType.uniform:
             for ind in new_pop:
                 self.mutation.uniform(ind)
+        if self.make_inversion:
+            for ind in new_pop:
+                self.mutation.inversion(ind[0])
+                self.mutation.inversion(ind[1])
 
     def epoch(self):
         elitist = sel_met.selection_of_best(self.population, self.proc_of_elite, self.minimalization)

@@ -1,4 +1,4 @@
-from random import random, randint
+from random import random, randint, choice, uniform
 from OE_project1.genetic.population import Chromosome
 from enum import Enum
 
@@ -7,6 +7,7 @@ class MutationType(Enum):
     two_point = 2
     inversion = 3
     boundry = 4
+    uniform = 5
 
 
 def flip_bit(bit):
@@ -87,6 +88,15 @@ class Mutation:
                 chromosome.set_binary(invert_operation(x, y, chrom))
             else:
                 chromosome.set_binary(invert_operation(y, x, chrom))
+
+    def uniform(self, individual):
+        if self.probability > random():
+            value_range = individual.get_value_range()
+            chromosomes = individual.get_chromosomes()
+            chrom_mutated = choice(chromosomes)
+            chrom_mutated.set_decimal(uniform(value_range[0], value_range[1]))
+
+
 
 
 if __name__ == '__main__':

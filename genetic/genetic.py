@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 
 
 class Genetic:
-    # TODO: rozna ilosc bitow dla chromosomow
     def __init__(self,
                  number_of_epochs=300,
                  size_of_population=50,
@@ -155,22 +154,25 @@ class Genetic:
 
 
 if __name__ == '__main__':
-    gen = Genetic(number_of_epochs=1000,
-                  size_of_population=2000,
+    gen = Genetic(number_of_epochs=300,
+                  size_of_population=1000,
                   value_range=(-10,10),
                   number_of_bits=12,
                   minimalization=False,
                   selection_method=sel_met.SelectionMethod.best,
                   tournament_size=7,
                   cross_degree=crossover.CrossDegree.arithmetic,
-                  mutation_type=m.MutationType.uniform,
+                  mutation_type=m.MutationType.boundry,
                   target_function=gen_utils.TargetFunction.booth,
                   best_sel_proc=20,
                   probablility_of_mutation=0.4,
                   proc_of_ind_for_elit=5,
                   make_inversion=True,
-                  seed=10
+                  filename=None,
+                  seed=None
                   )
 
     gen.run_genetic_algorithm()
     gen.plot_results()
+    print(f'Mean | Std: {gen.get_mean_sd()}')
+    print(f'Time: {gen.gettime()}')

@@ -33,6 +33,9 @@ def arithmetic_cross(ind1, ind2, value_range, number_of_bits, target_func):
 def heuristic_cross(ind1, ind2, value_range, number_of_bits, target_func):
     real_ind_1 = ind1.get_dec_value()
     real_ind_2 = ind2.get_dec_value()
+
+    # print(f'1: {real_ind_1}   2: {real_ind_2}')
+
     if (real_ind_1[0] - real_ind_2[0])*(real_ind_1[1] - real_ind_2[1]) < 0:
         return None
 
@@ -116,6 +119,9 @@ def create_new_population(population, selection_method, cross_degree, minimaliza
     new_individuals = []
     best_individual = None
 
+    # print(population)
+    # print('pop size:' + str(pop_size))
+
     if selection_method == SelectionMethod.best:
         best = selection.selection_of_best(population, selection_best_proc, minimalization)
         best_individual = best[0]
@@ -123,6 +129,7 @@ def create_new_population(population, selection_method, cross_degree, minimaliza
             parents = random.sample(best, 2)
             probability_of_crossover = random.random()
             if probability_of_crossover >= 0.5:
+                # print('parents: ' + str(parents[0]) + ', ' + str(parents[1]))
                 children = \
                     crossover(parents[0], parents[1], population.get_number_of_bits_per_chromosome(), target_func, cross_degree)
                 if children:

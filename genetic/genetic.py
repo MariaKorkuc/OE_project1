@@ -122,19 +122,19 @@ class Genetic:
         return m, sd
 
     def genetic_algorithm(self):
-        # TODO: dodac dodatkowy warunek stopu (niezmienna wartosc najlepszego)
         last_best = 0
         count_identical_best = 0
         self.start_time = time.time()
 
         for epoch in range(self.number_of_epochs):
+            # print('epoch: ' + str(epoch))
             best_individual = self.epoch()
             if best_individual.get_func_value() == last_best:
                 count_identical_best += 1
             else:
                 count_identical_best = 0
                 last_best = best_individual.get_func_value()
-            if count_identical_best == 20:
+            if count_identical_best == 50:
                 break
             self.best_individuals.append((epoch, best_individual))
 
@@ -156,17 +156,20 @@ class Genetic:
 
 if __name__ == '__main__':
     gen = Genetic(number_of_epochs=1000,
-                  size_of_population=150,
+                  size_of_population=2000,
                   value_range=(-10,10),
                   number_of_bits=12,
-                  minimalization=True,
-                  selection_method=sel_met.SelectionMethod.tournament,
+                  minimalization=False,
+                  selection_method=sel_met.SelectionMethod.best,
                   tournament_size=7,
-                  cross_degree=crossover.CrossDegree.heuristic,
-                  mutation_type=m.MutationType.one_point,
+                  cross_degree=crossover.CrossDegree.arithmetic,
+                  mutation_type=m.MutationType.uniform,
                   target_function=gen_utils.TargetFunction.booth,
                   best_sel_proc=20,
-                  probablility_of_mutation=0.4
+                  probablility_of_mutation=0.4,
+                  proc_of_ind_for_elit=5,
+                  make_inversion=True,
+                  seed=10
                   )
 
     gen.run_genetic_algorithm()

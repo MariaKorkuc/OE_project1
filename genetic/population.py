@@ -33,6 +33,8 @@ class Chromosome:
         self.set_binary_from_decimal()
 
     def get_decimal(self):
+        if not self.decimal:
+            self.set_initial_decimal()
         return self.decimal
 
     def set_binary_from_decimal(self):
